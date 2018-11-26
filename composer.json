@@ -7,7 +7,7 @@
         "openssl"
     ],
     "homepage": "https://github.com/skriptfabrik/php-openssl",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "Daniel Schröder",
