@@ -44,7 +44,7 @@ $ make install
 
 ### Analyse code
 
-The code analysis is being performed with PHPStan.
+The code analysis is being performed with [PHPStan](https://github.com/phpstan/phpstan).
 
 ```bash
 $ make analysis
@@ -52,7 +52,7 @@ $ make analysis
 
 ### Check code style
 
-The code style is being checked with PHP_CodeSniffer.
+The code style is being checked with [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
 
 ```bash
 $ make style-check
@@ -60,7 +60,7 @@ $ make style-check
 
 #### Fix code style
 
-Some minor code style issues can also be fixed with PHP_CodeSniffer.
+Some minor code style issues can also be fixed with [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
 
 ```bash
 $ make style-fix
@@ -68,7 +68,7 @@ $ make style-fix
 
 ### Run Tests
 
-PHPUnit will be used to run the test suite.
+[PHPUnit](https://github.com/sebastianbergmann/phpunit) is being used to run the test suite.
 
 ```bash
 $ make tests
@@ -76,7 +76,7 @@ $ make tests
 
 #### Run Tests With Coverage
 
-To display and export the coverage report add ...`-with-coverage`.
+To display and export the coverage report add `-with-coverage`.
 
 ```bash
 $ make tests-with-coverage
