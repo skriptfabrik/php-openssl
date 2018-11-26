@@ -1,4 +1,4 @@
-# skriptfabrik PHP OpenSSL package
+# A PHP OpenSSL package to generate and export key files 
 
 [![Build Status](https://travis-ci.com/skriptfabrik/php-openssl.svg?branch=master)](https://travis-ci.com/skriptfabrik/php-openssl)
 [![Coverage Status](https://coveralls.io/repos/github/skriptfabrik/php-openssl/badge.svg?branch=master)](https://coveralls.io/github/skriptfabrik/php-openssl?branch=master)

@@ -1,7 +1,7 @@
 {
     "name": "skriptfabrik/openssl",
     "type": "library",
-    "description": "skriptfabrik PHP OpenSSL library",
+    "description": "A PHP OpenSSL package to generate and export key files",
     "keywords": [
         "skriptfabrik",
         "openssl"

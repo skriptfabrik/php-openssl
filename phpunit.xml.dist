@@ -7,7 +7,7 @@
     verbose="true"
     forceCoversAnnotation="true">
     <testsuites>
-        <testsuite name="skriptfabrik PHP OpenSSL library test suite">
+        <testsuite name="skriptfabrik PHP OpenSSL test suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
