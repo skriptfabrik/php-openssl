@@ -1,0 +1,19 @@
+version: "3.4"
+
+services:
+
+  composer:
+    image: "composer:1.7"
+    volumes:
+    - "${COMPOSER_HOME}/cache/files:/composer/cache/files"
+    - "${HOME}/.ssh:/composer/.ssh:ro"
+    - ".:/opt/project"
+    environment:
+      COMPOSER_HOME: "/composer"
+    working_dir: "/opt/project"
+
+  php:
+    image: "schroedan/php:7.2"
+    volumes:
+    - ".:/opt/project"
+    working_dir: "/opt/project"

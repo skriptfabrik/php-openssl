@@ -1,0 +1,20 @@
+language: "bash"
+
+services:
+- "docker"
+
+cache:
+  directories:
+  - "${HOME}/.composer/cache/files"
+
+env:
+  global:
+  - "COMPOSER_HOME=${HOME}/.composer"
+
+install:
+- "make install"
+
+script: "make analysis && \
+  make style-check && \
+  make tests-with-coverage && \
+  make coverage-report"

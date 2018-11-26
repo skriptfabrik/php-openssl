@@ -1,0 +1,9 @@
+includes:
+- "tools/phpstan/vendor/phpstan/phpstan-phpunit/extension.neon"
+
+parameters:
+  autoload_files:
+  - "tools/phpunit/vendor/autoload.php"
+  ignoreErrors:
+  - "#Parameter \\#1 $message of class Skriptfabrik\\Openssl\\Exception\\OpensslErrorException constructor expects string, string|false given.#"
+  level: 7

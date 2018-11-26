@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+/**
+ * This file is part of the skriptfabrik PHP OpenSSL package.
+ *
+ * @author Daniel Schröder <daniel.schroeder@skriptfabrik.com>
+ */
+
+return require __DIR__ . '/openssl.php';

@@ -1,0 +1,90 @@
+{
+    "name": "skriptfabrik/openssl",
+    "type": "library",
+    "description": "skriptfabrik PHP OpenSSL library",
+    "keywords": [
+        "skriptfabrik",
+        "openssl"
+    ],
+    "homepage": "https://github.com/skriptfabrik/php-openssl",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Daniel Schröder",
+            "email": "daniel.schroeder@skriptfabrik.com",
+            "homepage": "https://github.com/schroedan",
+            "role": "Developer"
+        },
+        {
+            "name": "Marco Spengler",
+            "email": "marco.spengler@skriptfabrik.com",
+            "homepage": "https://github.com/maspeng",
+            "role": "Developer"
+        },
+        {
+            "name": "Frank Giesecke",
+            "email": "frank.giesecke@skriptfabrik.com",
+            "homepage": "https://github.com/FrankGiesecke",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "ext-openssl": "*",
+        "symfony/console": "^4.1"
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Skriptfabrik\\Openssl\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Skriptfabrik\\Openssl\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "@php vendor/bin/phpstan analyse src tests",
+        "check-style": "@php vendor/bin/phpcs -p",
+        "fix-style": "@php vendor/bin/phpcbf -p",
+        "test": "@php vendor/bin/phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "bamarni-bin": {
+            "target-directory": "tools"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "7.2"
+        }
+    },
+    "archive": {
+        "exclude": [
+            ".codcy.yml",
+            ".editorconfig",
+            ".gitattributes",
+            ".gitignore",
+            ".phpstorm.meta.php",
+            ".travis.yml",
+            "codesize.xml",
+            "composer.lock",
+            "Makefile",
+            "phpcs.xml.dist",
+            "phpstan.neon.dist",
+            "phpunit.xml.dist",
+            "tests",
+            "tools"
+        ]
+    },
+    "bin": [
+        "bin/openssl"
+    ]
+}
