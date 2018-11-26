@@ -5,7 +5,10 @@ install:
 	@echo "Installing dependencies"
 	@docker-compose run --rm composer composer install
 	@echo 'Installing development tools'
-	@docker-compose run --rm composer composer bin all install
+	@docker-compose run --rm composer composer bin phpunit install
+	@docker-compose run --rm composer composer bin phpstan install
+	@docker-compose run --rm composer composer bin squizlabs install
+	@docker-compose run --rm composer composer bin codacy install
 
 .PHONY: analysis
 analysis:
