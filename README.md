@@ -1,5 +1,8 @@
 # skriptfabrik PHP OpenSSL package
 
+[![Build Status](https://travis-ci.com/skriptfabrik/php-openssl.svg?branch=master)](https://travis-ci.com/skriptfabrik/php-openssl)
+[![Coverage Status](https://coveralls.io/repos/github/skriptfabrik/php-openssl/badge.svg?branch=master)](https://coveralls.io/github/skriptfabrik/php-openssl?branch=master)
+
 ## Usage
 
 Run `$ vendor/bin/openssl help [<command_name>]` to display the usage details for a specific command.
