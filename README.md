@@ -17,7 +17,7 @@ option to the command.
 $ vendor/bin/openssl openssl:generate-private-key [<output>]
 ```
 
-### Export the public key with OpenSSL
+### Export the public key
 
 The default public key file with the name `public.pem` will be exported to the current working directory. The private
 key is expected to be named `private.pem`. It should also be stored in the working directory per default. If you want to
@@ -58,9 +58,9 @@ The code style is being checked with PHP_CodeSniffer.
 $ make style-check
 ```
 
-### Fix code style
+#### Fix code style
 
-Some minor code style issues can be fixed with PHP_CodeSniffer.
+Some minor code style issues can also be fixed with PHP_CodeSniffer.
 
 ```bash
 $ make style-fix
@@ -68,12 +68,20 @@ $ make style-fix
 
 ### Run Tests
 
+PHPUnit will be used to run the test suite.
+
 ```bash
 $ make tests
 ```
 
-### Run Tests With Coverage
+#### Run Tests With Coverage
+
+To display and export the coverage report add ...`-with-coverage`.
 
 ```bash
 $ make tests-with-coverage
 ```
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
