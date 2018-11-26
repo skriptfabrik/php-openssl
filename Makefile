@@ -2,13 +2,14 @@ export COMPOSER_HOME=${HOME}/.composer/cache/files
 
 .PHONY: install
 install:
-	@echo "Installing dependencies"
-	@docker-compose run --rm composer composer install
-	@echo 'Installing development tools'
-	@docker-compose run --rm composer composer bin phpunit install
-	@docker-compose run --rm composer composer bin phpstan install
-	@docker-compose run --rm composer composer bin squizlabs install
-	@docker-compose run --rm composer composer bin codacy install
+	@echo "Installing dependencies and development tools"
+	@docker-compose run --entrypoint /bin/sh --rm composer -c " \
+		composer install && \
+		composer bin phpunit install && \
+		composer bin phpstan install && \
+		composer bin squizlabs install && \
+		composer bin php-coveralls install \
+	"
 
 .PHONY: analysis
 analysis:
@@ -38,7 +39,7 @@ tests-with-coverage:
 		php vendor/bin/phpunit --coverage-clover clover.xml --coverage-text \
 	"
 
-.PHONY: coverage-report
-coverage-report:
+.PHONY: travis-coverage-report
+travis-coverage-report:
 	@echo "Reporting code coverage"
-	@docker-compose run --rm php php vendor/bin/codacycoverage clover clover.xml
+	@docker-compose run -e TRAVIS=${TRAVIS} -e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} --rm composer vendor/bin/php-coveralls

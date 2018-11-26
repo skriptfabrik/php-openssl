@@ -17,4 +17,4 @@ install:
 script: "make analysis && \
   make style-check && \
   make tests-with-coverage && \
-  make coverage-report"
+  make travis-coverage-report"
