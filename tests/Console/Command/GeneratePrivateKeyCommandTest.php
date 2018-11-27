@@ -175,17 +175,14 @@ class GeneratePrivateKeyCommandTest extends TestCase
      */
     public function testExecutionReturnsErrorOnGeneratorFailure(): void
     {
+        // phpcs:ignore
+        $returnSelf = function () {
+            return func_get_arg(1);
+        };
+
         $privateKeyGeneratorProphecy = $this->prophesize(PrivateKeyGenerator::class);
-        $privateKeyGeneratorProphecy->setType(KeyInterface::TYPE_RSA)->will(
-            static function () {
-                return func_get_arg(1);
-            }
-        );
-        $privateKeyGeneratorProphecy->setBits(2048)->will(
-            static function () {
-                return func_get_arg(1);
-            }
-        );
+        $privateKeyGeneratorProphecy->setType(KeyInterface::TYPE_RSA)->will($returnSelf);
+        $privateKeyGeneratorProphecy->setBits(2048)->will($returnSelf);
         $privateKeyGeneratorProphecy->generate()->willThrow(new OpensslErrorException('Unknown OpenSSL error'));
 
         $commandMock = $this->getMockBuilder(GeneratePrivateKeyCommand::class)
