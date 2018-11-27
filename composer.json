@@ -68,7 +68,7 @@
     },
     "archive": {
         "exclude": [
-            ".codcy.yml",
+            ".coveralls.yml",
             ".editorconfig",
             ".gitattributes",
             ".gitignore",
