@@ -57,7 +57,7 @@ class PublicKey extends AbstractKey
     /**
      * Create public key from file.
      *
-     * @param \SplFileObject $file
+     * @param SplFileObject $file
      *
      * @return static
      *
@@ -77,7 +77,7 @@ class PublicKey extends AbstractKey
     /**
      * Export public key to file.
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @throws OpensslErrorException
      */

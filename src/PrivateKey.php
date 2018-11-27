@@ -56,7 +56,7 @@ class PrivateKey extends AbstractKey
     /**
      * Create private key from file.
      *
-     * @param \SplFileObject $file
+     * @param SplFileObject $file
      *
      * @return static
      *
@@ -110,7 +110,7 @@ class PrivateKey extends AbstractKey
     /**
      * Export private key to file.
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @return void
      *

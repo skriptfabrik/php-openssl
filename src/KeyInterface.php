@@ -70,7 +70,7 @@ interface KeyInterface
     /**
      * Export key to file.
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @return void
      *
