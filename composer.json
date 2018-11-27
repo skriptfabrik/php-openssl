@@ -76,6 +76,7 @@
             ".travis.yml",
             "codesize.xml",
             "composer.lock",
+            "docker-compose.yml",
             "Makefile",
             "phpcs.xml.dist",
             "phpstan.neon.dist",
