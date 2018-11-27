@@ -9,7 +9,11 @@ namespace Skriptfabrik\Openssl\Console\Command;
 
 use PHPUnit\Framework\TestCase;
 use Skriptfabrik\Openssl\Console\Application;
+use Skriptfabrik\Openssl\Exception\OpensslErrorException;
 use Skriptfabrik\Openssl\Helper\TempFileObjectHelper;
+use Skriptfabrik\Openssl\PrivateKey;
+use SplFileInfo;
+use SplFileObject;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -104,5 +108,116 @@ EOT;
 
         unlink($input->getPathname());
         unlink($output->getPathname());
+    }
+
+    public function testExecutionReturnsErrorOnReadFailure(): void
+    {
+        $inputFileProphecy = $this->prophesize(SplFileInfo::class);
+        $inputFileProphecy->isReadable()->willReturn(false);
+        $inputFileProphecy->__toString()->willReturn('private.pem');
+
+        $commandMock = $this->getMockBuilder(ExportPublicKeyCommand::class)
+            ->setMethods(['getInputArgument'])
+            ->getMock();
+
+        $commandMock
+            ->method('getInputArgument')
+            ->willReturn($inputFileProphecy->reveal());
+
+        $application = new Application();
+        $application->add($commandMock);
+
+        $command = $application->find(ExportPublicKeyCommand::NAME);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+            ]
+        );
+
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertContains('[OpenSSL] Unable to read private key file', $commandTester->getDisplay());
+    }
+
+    public function testExecutionReturnsErrorOnWriteFailure(): void
+    {
+        $inputFileProphecy = $this->prophesize(SplFileInfo::class);
+        $inputFileProphecy->isReadable()->willReturn(true);
+
+        $pathInfoProphecy = $this->prophesize(SplFileInfo::class);
+        $pathInfoProphecy->isWritable()->willReturn(false);
+
+        $outputFileProphecy = $this->prophesize(SplFileInfo::class);
+        $outputFileProphecy->isFile()->willReturn(false);
+        $outputFileProphecy->getPathInfo()->willReturn($pathInfoProphecy->reveal());
+        $outputFileProphecy->__toString()->willReturn('public.pem');
+
+        $commandMock = $this->getMockBuilder(ExportPublicKeyCommand::class)
+            ->setMethods(['getInputArgument', 'getOutputArgument'])
+            ->getMock();
+
+        $commandMock
+            ->method('getInputArgument')
+            ->willReturn($inputFileProphecy->reveal());
+
+        $commandMock
+            ->method('getOutputArgument')
+            ->willReturn($outputFileProphecy->reveal());
+
+        $application = new Application();
+        $application->add($commandMock);
+
+        $command = $application->find(ExportPublicKeyCommand::NAME);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+            ]
+        );
+
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertContains('[OpenSSL] Unable to write public key file', $commandTester->getDisplay());
+    }
+
+    /**
+     * @throws OpensslErrorException
+     */
+    public function testExecutionReturnsErrorOnDetailsFailure(): void
+    {
+        $inputFileProphecy = $this->prophesize(SplFileInfo::class);
+        $inputFileProphecy->isReadable()->willReturn(true);
+        $inputFileProphecy->openFile()->willReturn($this->prophesize(SplFileObject::class)->reveal());
+
+        $privateKeyProphecy = $this->prophesize(PrivateKey::class);
+        $privateKeyProphecy->getPublicKey()->willThrow(new OpensslErrorException('Unknown OpenSSL error'));
+
+        $commandMock = $this->getMockBuilder(ExportPublicKeyCommand::class)
+            ->setMethods(['getInputArgument', 'createPrivateKeyFromFile'])
+            ->getMock();
+
+        $commandMock
+            ->method('getInputArgument')
+            ->willReturn($inputFileProphecy->reveal());
+
+        $commandMock
+            ->method('createPrivateKeyFromFile')
+            ->willReturn($privateKeyProphecy->reveal());
+
+        $application = new Application();
+        $application->add($commandMock);
+
+        $command = $application->find(ExportPublicKeyCommand::NAME);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+            ]
+        );
+
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertContains('[OpenSSL] Unknown OpenSSL error', $commandTester->getDisplay());
     }
 }

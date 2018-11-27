@@ -121,7 +121,7 @@ class GeneratePrivateKeyCommand extends Command
             return 1;
         }
 
-        $generator = new PrivateKeyGenerator();
+        $generator = $this->createPrivateKeyGenerator();
         $type = $this->getTypeOption($input);
         $bits = $this->getBitsOption($input);
 
@@ -152,5 +152,15 @@ class GeneratePrivateKeyCommand extends Command
         );
 
         return 0;
+    }
+
+    /**
+     * Create private key generator.
+     *
+     * @return PrivateKeyGenerator
+     */
+    public function createPrivateKeyGenerator(): PrivateKeyGenerator
+    {
+        return new PrivateKeyGenerator();
     }
 }

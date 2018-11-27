@@ -12,6 +12,7 @@ use Skriptfabrik\Openssl\Console\Input\NoOverrideOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\OutputArgumentTrait;
 use Skriptfabrik\Openssl\Exception\OpensslErrorException;
 use Skriptfabrik\Openssl\PrivateKey;
+use SplFileObject;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -112,7 +113,7 @@ class ExportPublicKeyCommand extends Command
         }
 
         try {
-            $key = PrivateKey::fromFile($inputFile->openFile())->getPublicKey();
+            $key = $this->createPrivateKeyFromFile($inputFile->openFile())->getPublicKey();
             $type = $key->getType();
             $bits = $key->getBits();
             $key->exportToFile($outputFile);
@@ -132,5 +133,19 @@ class ExportPublicKeyCommand extends Command
         );
 
         return 0;
+    }
+
+    /**
+     * Create private key from file.
+     *
+     * @param SplFileObject $file
+     *
+     * @return PrivateKey
+     *
+     * @throws OpensslErrorException
+     */
+    public function createPrivateKeyFromFile(SplFileObject $file): PrivateKey
+    {
+        return PrivateKey::fromFile($file);
     }
 }
