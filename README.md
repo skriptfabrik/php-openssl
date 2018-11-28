@@ -10,21 +10,22 @@ Run `$ vendor/bin/openssl help [<command_name>]` to display the usage details fo
 ### Generate a private key
 
 The default private key file with the name `private.pem` will be generated to the current working directory. You can
-specify the `--type` and `--bits` as an option. If you want to keep an existing private key, append the `--no-override`
-option to the command.
+specify the `--type`, `--bits` and `--passphrase` as an option. If you want to keep an existing private key, append the
+`--no-override` option to the command.
 
 ```bash
-$ vendor/bin/openssl openssl:generate-private-key [<output>]
+$ vendor/bin/openssl openssl:generate-private-key [options] [--] [<output>]
 ```
 
 ### Export the public key
 
 The default public key file with the name `public.pem` will be exported to the current working directory. The private
-key is expected to be named `private.pem`. It should also be stored in the working directory per default. If you want to
-keep an existing public key, append the `--no-override` option to the command.
+key is expected to be named `private.pem`. It should also be stored in the working directory per default. Use the
+`--passphrase` option when the private key was encrypted by a passphrase. If you want to keep an existing public key,
+append the `--no-override` option to the command.
 
 ```bash
-$ vendor/bin/openssl openssl:export-public-key [<input>] [<output>]
+$ vendor/bin/openssl openssl:export-public-key [options] [--] [<input> [<output>]]
 ```
 
 ## Development
