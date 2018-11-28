@@ -25,14 +25,33 @@ class PrivateKeyGeneratorTest extends TestCase
     /**
      * @throws \Skriptfabrik\Openssl\Exception\OpensslErrorException
      */
+    public function testDefaultKeyGenerator(): void
+    {
+        $generator = new PrivateKeyGenerator();
+
+        $this->assertSame(PrivateKey::TYPE_RSA, $generator->getType());
+        $this->assertSame(2048, $generator->getBits());
+        $this->assertNull($generator->getPassphrase());
+
+        $key = $generator->generate();
+
+        $this->assertSame(PrivateKey::TYPE_RSA, $key->getType());
+        $this->assertSame(2048, $key->getBits());
+    }
+
+    /**
+     * @throws \Skriptfabrik\Openssl\Exception\OpensslErrorException
+     */
     public function testRsaKeyGenerator(): void
     {
         $generator = new PrivateKeyGenerator();
         $generator->setType(PrivateKey::TYPE_RSA);
         $generator->setBits(512);
+        $generator->setPassphrase('My super secret passphrase');
 
         $this->assertSame(PrivateKey::TYPE_RSA, $generator->getType());
         $this->assertSame(512, $generator->getBits());
+        $this->assertSame('My super secret passphrase', $generator->getPassphrase());
 
         $key = $generator->generate();
 
@@ -48,9 +67,11 @@ class PrivateKeyGeneratorTest extends TestCase
         $generator = new PrivateKeyGenerator();
         $generator->setType(PrivateKey::TYPE_DSA);
         $generator->setBits(1024);
+        $generator->setPassphrase('My extra secret passphrase');
 
         $this->assertSame(PrivateKey::TYPE_DSA, $generator->getType());
         $this->assertSame(1024, $generator->getBits());
+        $this->assertSame('My extra secret passphrase', $generator->getPassphrase());
 
         $key = $generator->generate();
 

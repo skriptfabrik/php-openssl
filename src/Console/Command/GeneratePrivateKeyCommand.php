@@ -10,6 +10,7 @@ namespace Skriptfabrik\Openssl\Console\Command;
 use Skriptfabrik\Openssl\Console\Input\BitsOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\NoOverrideOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\OutputArgumentTrait;
+use Skriptfabrik\Openssl\Console\Input\PassphraseOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\TypeOptionTrait;
 use Skriptfabrik\Openssl\Exception\InvalidArgumentException;
 use Skriptfabrik\Openssl\Exception\OpensslErrorException;
@@ -30,6 +31,7 @@ class GeneratePrivateKeyCommand extends Command
 {
     use TypeOptionTrait;
     use BitsOptionTrait;
+    use PassphraseOptionTrait;
     use NoOverrideOptionTrait;
     use OutputArgumentTrait;
 
@@ -78,6 +80,12 @@ class GeneratePrivateKeyCommand extends Command
             (string)self::DEFAULT_BITS
         );
         $this->addOption(
+            'passphrase',
+            'p',
+            InputOption::VALUE_REQUIRED,
+            'The private key can be optionally protected by a passphrase'
+        );
+        $this->addOption(
             'no-override',
             null,
             InputOption::VALUE_NONE,
@@ -103,6 +111,9 @@ class GeneratePrivateKeyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $type = $this->getTypeOption($input);
+        $bits = $this->getBitsOption($input);
+        $passphrase = $this->getPassphraseOption($input);
         $noOverride = $this->isNoOverrideOption($input);
         $outputFile = $this->getOutputArgument($input);
 
@@ -122,11 +133,9 @@ class GeneratePrivateKeyCommand extends Command
         }
 
         $generator = $this->createPrivateKeyGenerator();
-        $type = $this->getTypeOption($input);
-        $bits = $this->getBitsOption($input);
 
         try {
-            $generator->setType($type)->setBits($bits);
+            $generator->setType($type)->setBits($bits)->setPassphrase($passphrase);
         } catch (InvalidArgumentException $exception) {
             $output->writeln(sprintf('<error>[OpenSSL] %s</error>', $exception->getMessage()));
             return 1;
@@ -134,6 +143,7 @@ class GeneratePrivateKeyCommand extends Command
 
         try {
             $key = $generator->generate();
+            $encrypted = $key->isEncrypted();
             $type = $key->getType();
             $bits = $key->getBits();
             $key->exportToFile($outputFile);
@@ -144,7 +154,8 @@ class GeneratePrivateKeyCommand extends Command
 
         $output->writeln(
             sprintf(
-                '[OpenSSL] Generated %s private key with %s bits: %s',
+                '[OpenSSL] Generated %s%s private key with %s bits: %s',
+                $encrypted ? 'encrypted ' : '',
                 $type,
                 $bits,
                 $outputFile

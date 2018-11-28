@@ -24,53 +24,62 @@ class PrivateKey extends AbstractKey
     private $key;
 
     /**
+     * @var string|null
+     */
+    private $passphrase;
+
+    /**
      * Private key constructor.
      *
      * @param resource $key
+     * @param string|null $passphrase
      */
-    public function __construct($key)
+    public function __construct($key, ?string $passphrase = null)
     {
         $this->key = $key;
+        $this->passphrase = $passphrase;
     }
 
     /**
      * Create private key from string.
      *
      * @param string $pem
+     * @param string|null $passphrase
      *
      * @return static
      *
      * @throws OpensslErrorException
      */
-    public static function fromString(string $pem)
+    public static function fromString(string $pem, ?string $passphrase = null)
     {
-        $key = openssl_pkey_get_private($pem);
+        $key = openssl_pkey_get_private($pem, (string)$passphrase);
 
         if ($key === false) {
             throw new OpensslErrorException(openssl_error_string());
         }
 
-        return new static($key);
+        return new static($key, $passphrase);
     }
 
     /**
      * Create private key from file.
      *
      * @param SplFileObject $file
+     * @param string|null $passphrase
      *
      * @return static
      *
      * @throws OpensslErrorException
      */
-    public static function fromFile(SplFileObject $file)
+    public static function fromFile(SplFileObject $file, ?string $passphrase = null)
     {
-        $key = openssl_pkey_get_private('file://' . $file->getPathname());
+        $key = openssl_pkey_get_private('file://' . $file->getPathname(), (string)$passphrase);
 
         if ($key === false) {
             throw new OpensslErrorException(openssl_error_string());
         }
 
-        return new static($key);
+        return new static($key, $passphrase);
     }
 
     /**
@@ -100,7 +109,7 @@ class PrivateKey extends AbstractKey
      */
     public function export(): string
     {
-        if (!openssl_pkey_export($this->key, $key)) {
+        if (!openssl_pkey_export($this->key, $key, $this->passphrase)) {
             throw new OpensslErrorException(openssl_error_string());
         }
 
@@ -118,9 +127,19 @@ class PrivateKey extends AbstractKey
      */
     public function exportToFile(SplFileInfo $file): void
     {
-        if (!openssl_pkey_export_to_file($this->key, $file->getPathname())) {
+        if (!openssl_pkey_export_to_file($this->key, $file->getPathname(), $this->passphrase)) {
             throw new OpensslErrorException(openssl_error_string());
         }
+    }
+
+    /**
+     * Return whether the private key is encrypted.
+     *
+     * @return bool
+     */
+    public function isEncrypted(): bool
+    {
+        return $this->passphrase !== null;
     }
 
     /**

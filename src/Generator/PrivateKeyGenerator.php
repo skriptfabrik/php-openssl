@@ -34,6 +34,11 @@ class PrivateKeyGenerator
     private $bits = 2048;
 
     /**
+     * @var string|null
+     */
+    private $passphrase;
+
+    /**
      * Get type.
      *
      * @return string
@@ -108,6 +113,30 @@ class PrivateKeyGenerator
     }
 
     /**
+     * Get passphrase.
+     *
+     * @return string|null
+     */
+    public function getPassphrase(): ?string
+    {
+        return $this->passphrase;
+    }
+
+    /**
+     * Set passphrase.
+     *
+     * @param string|null $passphrase
+     *
+     * @return $this
+     */
+    public function setPassphrase(?string $passphrase): self
+    {
+        $this->passphrase = $passphrase;
+
+        return $this;
+    }
+
+    /**
      * Generate private key.
      *
      * @return PrivateKey
@@ -120,6 +149,7 @@ class PrivateKeyGenerator
             [
                 'private_key_type' => $this->type,
                 'private_key_bits' => $this->bits,
+                'encrypt_key' => $this->passphrase !== null,
             ]
         );
 
@@ -127,6 +157,6 @@ class PrivateKeyGenerator
             throw new OpensslErrorException(openssl_error_string());
         }
 
-        return new PrivateKey($key);
+        return new PrivateKey($key, $this->passphrase);
     }
 }

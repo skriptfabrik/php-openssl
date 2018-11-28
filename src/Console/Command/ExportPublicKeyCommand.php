@@ -10,6 +10,7 @@ namespace Skriptfabrik\Openssl\Console\Command;
 use Skriptfabrik\Openssl\Console\Input\InputArgumentTrait;
 use Skriptfabrik\Openssl\Console\Input\NoOverrideOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\OutputArgumentTrait;
+use Skriptfabrik\Openssl\Console\Input\PassphraseOptionTrait;
 use Skriptfabrik\Openssl\Exception\OpensslErrorException;
 use Skriptfabrik\Openssl\PrivateKey;
 use SplFileObject;
@@ -28,6 +29,7 @@ use function sprintf;
  */
 class ExportPublicKeyCommand extends Command
 {
+    use PassphraseOptionTrait;
     use NoOverrideOptionTrait;
     use InputArgumentTrait;
     use OutputArgumentTrait;
@@ -52,6 +54,12 @@ class ExportPublicKeyCommand extends Command
     {
         $this->setName(self::NAME);
         $this->setDescription(self::DESCRIPTION);
+        $this->addOption(
+            'passphrase',
+            'p',
+            InputOption::VALUE_REQUIRED,
+            'The optional parameter passphrase must be used if the specified private key is protected by a passphrase.'
+        );
         $this->addOption(
             'no-override',
             null,
@@ -84,7 +92,9 @@ class ExportPublicKeyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $passphrase = $this->getPassphraseOption($input);
         $noOverride = $this->isNoOverrideOption($input);
+        $inputFile = $this->getInputArgument($input);
         $outputFile = $this->getOutputArgument($input);
 
         if ($noOverride && $outputFile->isFile()) {
@@ -97,8 +107,6 @@ class ExportPublicKeyCommand extends Command
 
             return 0;
         }
-
-        $inputFile = $this->getInputArgument($input);
 
         if (!$inputFile->isReadable()) {
             $output->writeln(sprintf('<error>[OpenSSL] Unable to read private key file: %s</error>', $inputFile));
@@ -113,7 +121,7 @@ class ExportPublicKeyCommand extends Command
         }
 
         try {
-            $key = $this->createPrivateKeyFromFile($inputFile->openFile())->getPublicKey();
+            $key = $this->createPrivateKeyFromFile($inputFile->openFile(), $passphrase)->getPublicKey();
             $type = $key->getType();
             $bits = $key->getBits();
             $key->exportToFile($outputFile);
@@ -139,13 +147,14 @@ class ExportPublicKeyCommand extends Command
      * Create private key from file.
      *
      * @param SplFileObject $file
+     * @param string|null $passphrase
      *
      * @return PrivateKey
      *
      * @throws OpensslErrorException
      */
-    public function createPrivateKeyFromFile(SplFileObject $file): PrivateKey
+    public function createPrivateKeyFromFile(SplFileObject $file, ?string $passphrase = null): PrivateKey
     {
-        return PrivateKey::fromFile($file);
+        return PrivateKey::fromFile($file, $passphrase);
     }
 }

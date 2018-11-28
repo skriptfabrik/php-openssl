@@ -6,5 +6,7 @@ parameters:
   autoload_files:
   - "tools/phpunit/vendor/autoload.php"
   ignoreErrors:
-  - "#Parameter \\#1 $message of class Skriptfabrik\\Openssl\\Exception\\OpensslErrorException constructor expects string, string|false given.#"
+  - "#Parameter \\#1 \\$message of class Skriptfabrik\\\\Openssl\\\\Exception\\\\OpensslErrorException constructor expects string, string\\|false given\\.#"
+  - "#Parameter \\#3 \\$passphrase of function openssl_pkey_export expects string, string\\|null given\\.#"
+  - "#Parameter \\#3 \\$passphrase of function openssl_pkey_export_to_file expects string, string\\|null given\\.#"
   level: 7

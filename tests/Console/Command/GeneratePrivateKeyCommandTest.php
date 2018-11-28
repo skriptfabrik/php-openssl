@@ -183,6 +183,7 @@ class GeneratePrivateKeyCommandTest extends TestCase
         $privateKeyGeneratorProphecy = $this->prophesize(PrivateKeyGenerator::class);
         $privateKeyGeneratorProphecy->setType(KeyInterface::TYPE_RSA)->will($returnSelf);
         $privateKeyGeneratorProphecy->setBits(2048)->will($returnSelf);
+        $privateKeyGeneratorProphecy->setPassphrase(null)->will($returnSelf);
         $privateKeyGeneratorProphecy->generate()->willThrow(new OpensslErrorException('Unknown OpenSSL error'));
 
         $commandMock = $this->getMockBuilder(GeneratePrivateKeyCommand::class)

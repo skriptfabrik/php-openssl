@@ -62,6 +62,7 @@ EOT;
         $method->setAccessible(true);
 
         $this->assertInternalType('resource', $method->invoke($key));
+        $this->assertFalse($key->isEncrypted());
     }
 
     /**
@@ -76,6 +77,7 @@ EOT;
         $method->setAccessible(true);
 
         $this->assertInternalType('resource', $method->invoke($key));
+        $this->assertFalse($key->isEncrypted());
     }
 
     /**
@@ -109,6 +111,7 @@ EOT;
         $method->setAccessible(true);
 
         $this->assertInternalType('resource', $method->invoke($key));
+        $this->assertFalse($key->isEncrypted());
 
         unlink($file->getPathname());
     }
