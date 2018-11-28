@@ -98,6 +98,15 @@ class PrivateKeyGeneratorTest extends TestCase
     }
 
     /**
+     * @expectedException \Skriptfabrik\Openssl\Exception\InvalidArgumentException
+     */
+    public function testGeneratorThrowsExceptionOnInvalidPassphrase(): void
+    {
+        $generator = new PrivateKeyGenerator();
+        $generator->setPassphrase('');
+    }
+
+    /**
      * @expectedException \Skriptfabrik\Openssl\Exception\OpensslErrorException
      *
      * @runInSeparateProcess

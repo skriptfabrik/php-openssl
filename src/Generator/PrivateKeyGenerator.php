@@ -128,9 +128,15 @@ class PrivateKeyGenerator
      * @param string|null $passphrase
      *
      * @return $this
+     *
+     * @throws InvalidArgumentException
      */
     public function setPassphrase(?string $passphrase): self
     {
+        if ($passphrase === '') {
+            throw new InvalidArgumentException('Invalid passphrase, must not be empty string');
+        }
+
         $this->passphrase = $passphrase;
 
         return $this;
