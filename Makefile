@@ -36,10 +36,15 @@ tests-with-coverage:
 	@echo "Running tests with code coverage"
 	@docker-compose run --entrypoint /bin/sh --rm php -c " \
 		echo "zend_extension=xdebug.so" > \$${PHP_INI_DIR}/conf.d/xdebug.ini && \
-		php vendor/bin/phpunit --coverage-clover clover.xml --coverage-text \
+		php vendor/bin/phpunit --coverage-clover clover.xml --coverage-text --coverage-html coverage \
 	"
 
 .PHONY: travis-coverage-report
 travis-coverage-report:
 	@echo "Reporting code coverage"
 	@docker-compose run -e TRAVIS=${TRAVIS} -e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} --rm composer vendor/bin/php-coveralls
+
+.PHONY: sh
+sh:
+	@echo "Running shell"
+	@docker-compose run --rm php sh

@@ -159,7 +159,12 @@ class GeneratePrivateKeyCommand extends Command
         $generator = $this->createPrivateKeyGenerator();
 
         try {
-            $generator->setDigest($digest)->setType($type)->setBits($bits)->setPassphrase($passphrase)->setCipher($cipher);
+            $generator
+                ->setDigest($digest)
+                ->setType($type)
+                ->setBits($bits)
+                ->setPassphrase($passphrase)
+                ->setCipher($cipher);
         } catch (InvalidArgumentException $exception) {
             $output->writeln(sprintf('<error>[OpenSSL] %s</error>', $exception->getMessage()));
             return 1;
