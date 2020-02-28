@@ -24,6 +24,46 @@ class PrivateKeyGenerator
     public const MIN_BITS = 64;
 
     /**
+     * RC2 128 cipher.
+     */
+    public const CIPHER_RC2_128 = 'rc2-128';
+
+    /**
+     * AES 128 CBC cipher.
+     */
+    public const CIPHER_AES_128_CBC = 'aes-128-cbc';
+
+    /**
+     * AES 192 CBC cipher.
+     */
+    public const CIPHER_AES_192_CBC = 'aes-192-cbc';
+
+    /**
+     * AES 256 CBC cipher.
+     */
+    public const CIPHER_AES_256_CBC = 'aes-256-cbc';
+
+    /**
+     * Supported ciphers.
+     */
+    public const SUPPORTED_CIPHERS = [
+        OPENSSL_CIPHER_RC2_128 => self::CIPHER_RC2_128,
+        OPENSSL_CIPHER_AES_128_CBC => self::CIPHER_AES_128_CBC,
+        OPENSSL_CIPHER_AES_192_CBC => self::CIPHER_AES_192_CBC,
+        OPENSSL_CIPHER_AES_256_CBC => self::CIPHER_AES_256_CBC,
+    ];
+
+    /**
+     * @var string[]|null
+     */
+    private static $supportedDigests;
+
+    /**
+     * @var string
+     */
+    private $digest = 'sha256';
+
+    /**
      * @var int
      */
     private $type = OPENSSL_KEYTYPE_RSA;
@@ -37,6 +77,59 @@ class PrivateKeyGenerator
      * @var string|null
      */
     private $passphrase;
+
+    /**
+     * @var int|null
+     */
+    private $cipher;
+
+    /**
+     * @return string[]
+     */
+    public function getSupportedDigests(): array
+    {
+        if (self::$supportedDigests === null) {
+            self::$supportedDigests = openssl_get_md_methods(true);
+        }
+
+        return self::$supportedDigests;
+    }
+
+    /**
+     * Get digest.
+     *
+     * @return string
+     */
+    public function getDigest(): string
+    {
+        return $this->digest;
+    }
+
+    /**
+     * Set digest.
+     *
+     * @param string $digest
+     *
+     * @return $this
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setDigest(string $digest): self
+    {
+        if (!in_array($digest, $this->getSupportedDigests(), true)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid digest (%s), valid digests: %s',
+                    $digest,
+                    implode(', ', $this->getSupportedDigests())
+                )
+            );
+        }
+
+        $this->digest = $digest;
+
+        return $this;
+    }
 
     /**
      * Get type.
@@ -143,6 +236,50 @@ class PrivateKeyGenerator
     }
 
     /**
+     * Get cipher.
+     *
+     * @return string|null
+     */
+    public function getCipher(): ?string
+    {
+        return self::SUPPORTED_CIPHERS[$this->cipher] ?? null;
+    }
+
+    /**
+     * Set cipher.
+     *
+     * @param string|null $cipher
+     *
+     * @return $this
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setCipher(?string $cipher): self
+    {
+        if ($cipher === null) {
+            $this->cipher = null;
+
+            return $this;
+        }
+
+        $numericCipher = array_search(strtolower($cipher), self::SUPPORTED_CIPHERS, true);
+
+        if ($numericCipher === false) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid cipher (%s), valid ciphers: %s',
+                    $cipher,
+                    implode(', ', self::SUPPORTED_CIPHERS)
+                )
+            );
+        }
+
+        $this->cipher = $numericCipher;
+
+        return $this;
+    }
+
+    /**
      * Generate private key.
      *
      * @return PrivateKey
@@ -153,9 +290,11 @@ class PrivateKeyGenerator
     {
         $key = openssl_pkey_new(
             [
+                'digest_alg' => $this->digest,
                 'private_key_type' => $this->type,
                 'private_key_bits' => $this->bits,
                 'encrypt_key' => $this->passphrase !== null,
+                'encrypt_key_cipher' => $this->cipher,
             ]
         );
 

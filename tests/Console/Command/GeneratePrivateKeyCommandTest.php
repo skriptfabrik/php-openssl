@@ -31,8 +31,12 @@ class GeneratePrivateKeyCommandTest extends TestCase
 
         $this->assertSame(GeneratePrivateKeyCommand::NAME, $command->getName());
         $this->assertSame(GeneratePrivateKeyCommand::DESCRIPTION, $command->getDescription());
+        $this->assertTrue($command->getDefinition()->hasOption('digest'));
         $this->assertTrue($command->getDefinition()->hasOption('type'));
         $this->assertTrue($command->getDefinition()->hasOption('bits'));
+        $this->assertTrue($command->getDefinition()->hasOption('passphrase'));
+        $this->assertTrue($command->getDefinition()->hasOption('cipher'));
+        $this->assertTrue($command->getDefinition()->hasOption('no-override'));
         $this->assertTrue($command->getDefinition()->hasArgument('output'));
     }
 
@@ -50,6 +54,7 @@ class GeneratePrivateKeyCommandTest extends TestCase
             [
                 'command' => $command->getName(),
                 'output' => $output->getPathname(),
+                '--digest' => 'sha256',
                 '--type' => 'DSA',
                 '--bits' => '1024',
             ]
@@ -120,6 +125,31 @@ class GeneratePrivateKeyCommandTest extends TestCase
         $this->assertContains('[OpenSSL] Unable to write private key file', $commandTester->getDisplay());
     }
 
+    public function testExecutionReturnsErrorOnInvalidDigestOption(): void
+    {
+        $application = new Application();
+        $application->add(new GeneratePrivateKeyCommand());
+
+        $command = $application->find(GeneratePrivateKeyCommand::NAME);
+        $commandTester = new CommandTester($command);
+
+        $output = TempFileObjectHelper::createTempFile();
+        $output->fwrite('');
+
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+                'output' => $output->getPathname(),
+                '--digest' => 'FOO',
+            ]
+        );
+
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertContains('[OpenSSL] Invalid digest (FOO)', $commandTester->getDisplay());
+
+        unlink($output->getPathname());
+    }
+
     public function testExecutionReturnsErrorOnInvalidTypeOption(): void
     {
         $application = new Application();
@@ -181,9 +211,11 @@ class GeneratePrivateKeyCommandTest extends TestCase
         };
 
         $privateKeyGeneratorProphecy = $this->prophesize(PrivateKeyGenerator::class);
+        $privateKeyGeneratorProphecy->setDigest('sha256')->will($returnSelf);
         $privateKeyGeneratorProphecy->setType(KeyInterface::TYPE_RSA)->will($returnSelf);
         $privateKeyGeneratorProphecy->setBits(2048)->will($returnSelf);
         $privateKeyGeneratorProphecy->setPassphrase(null)->will($returnSelf);
+        $privateKeyGeneratorProphecy->setCipher(null)->will($returnSelf);
         $privateKeyGeneratorProphecy->generate()->willThrow(new OpensslErrorException('Unknown OpenSSL error'));
 
         $commandMock = $this->getMockBuilder(GeneratePrivateKeyCommand::class)

@@ -8,6 +8,8 @@
 namespace Skriptfabrik\Openssl\Console\Command;
 
 use Skriptfabrik\Openssl\Console\Input\BitsOptionTrait;
+use Skriptfabrik\Openssl\Console\Input\CipherOptionTrait;
+use Skriptfabrik\Openssl\Console\Input\DigestOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\NoOverrideOptionTrait;
 use Skriptfabrik\Openssl\Console\Input\OutputArgumentTrait;
 use Skriptfabrik\Openssl\Console\Input\PassphraseOptionTrait;
@@ -29,9 +31,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GeneratePrivateKeyCommand extends Command
 {
+    use DigestOptionTrait;
     use TypeOptionTrait;
     use BitsOptionTrait;
     use PassphraseOptionTrait;
+    use CipherOptionTrait;
     use NoOverrideOptionTrait;
     use OutputArgumentTrait;
 
@@ -44,6 +48,11 @@ class GeneratePrivateKeyCommand extends Command
      * Command description.
      */
     public const DESCRIPTION = 'Generate a private key with OpenSSL';
+
+    /**
+     * The default digest.
+     */
+    public const DEFAULT_DIGEST = 'sha256';
 
     /**
      * The default key type.
@@ -66,6 +75,13 @@ class GeneratePrivateKeyCommand extends Command
         $this->setName(self::NAME);
         $this->setDescription(self::DESCRIPTION);
         $this->addOption(
+            'digest',
+            'd',
+            InputOption::VALUE_REQUIRED,
+            'The method or signature hash',
+            self::DEFAULT_DIGEST
+        );
+        $this->addOption(
             'type',
             't',
             InputOption::VALUE_REQUIRED,
@@ -84,6 +100,12 @@ class GeneratePrivateKeyCommand extends Command
             'p',
             InputOption::VALUE_REQUIRED,
             'The private key can be optionally protected by a passphrase'
+        );
+        $this->addOption(
+            'cipher',
+            'c',
+            InputOption::VALUE_REQUIRED,
+            'The cipher for the passphrase protection'
         );
         $this->addOption(
             'no-override',
@@ -111,9 +133,11 @@ class GeneratePrivateKeyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $digest = $this->getDigestOption($input);
         $type = $this->getTypeOption($input);
         $bits = $this->getBitsOption($input);
         $passphrase = $this->getPassphraseOption($input);
+        $cipher = $this->getCipherOption($input);
         $noOverride = $this->isNoOverrideOption($input);
         $outputFile = $this->getOutputArgument($input);
 
@@ -135,7 +159,7 @@ class GeneratePrivateKeyCommand extends Command
         $generator = $this->createPrivateKeyGenerator();
 
         try {
-            $generator->setType($type)->setBits($bits)->setPassphrase($passphrase);
+            $generator->setDigest($digest)->setType($type)->setBits($bits)->setPassphrase($passphrase)->setCipher($cipher);
         } catch (InvalidArgumentException $exception) {
             $output->writeln(sprintf('<error>[OpenSSL] %s</error>', $exception->getMessage()));
             return 1;
