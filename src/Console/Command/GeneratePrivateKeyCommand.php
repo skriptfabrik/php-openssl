@@ -70,6 +70,11 @@ class GeneratePrivateKeyCommand extends Command
     protected static $defaultName = self::NAME;
 
     /**
+     * Default description
+     */
+    protected static $defaultDescription = self::DESCRIPTION;
+
+    /**
      * Configure command.
      *
      * @throws \InvalidArgumentException
