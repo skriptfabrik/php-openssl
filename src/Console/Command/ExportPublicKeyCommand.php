@@ -45,6 +45,16 @@ class ExportPublicKeyCommand extends Command
     public const DESCRIPTION = 'Export the public key with OpenSSL';
 
     /**
+     * Default name
+     */
+    protected static $defaultName = self::NAME;
+
+    /**
+     * Default description
+     */
+    protected static $defaultDescription = self::DESCRIPTION;
+
+    /**
      * Configure command.
      *
      * @throws \InvalidArgumentException

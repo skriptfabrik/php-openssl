@@ -65,6 +65,16 @@ class GeneratePrivateKeyCommand extends Command
     public const DEFAULT_BITS = 2048;
 
     /**
+     * Default name
+     */
+    protected static $defaultName = self::NAME;
+
+    /**
+     * Default description
+     */
+    protected static $defaultDescription = self::DESCRIPTION;
+
+    /**
      * Configure command.
      *
      * @throws \InvalidArgumentException
